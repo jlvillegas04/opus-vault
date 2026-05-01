@@ -1,17 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Pencil, Trash2, Users } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Plus, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { CharacterForm } from "./character-form";
+import { CharacterSheet } from "./character-sheet";
 import type { Character } from "@/lib/db/schema";
 
-// Colored badge styles per status — using bg opacity so they work in dark mode
 const STATUS_STYLES: Record<string, string> = {
   alive: "bg-green-500/15 text-green-400 border-green-500/20",
   dead: "bg-red-500/15 text-red-400 border-red-500/20",
@@ -26,30 +26,13 @@ async function fetchCharacters(): Promise<Character[]> {
 }
 
 export function CharacterList() {
-  const queryClient = useQueryClient();
-  const [formOpen, setFormOpen] = useState(false);
-  const [editingCharacter, setEditingCharacter] = useState<Character | null>(null);
+  const [newFormOpen, setNewFormOpen] = useState(false);
+  const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
 
   const { data: characters, isLoading } = useQuery({
     queryKey: ["characters"],
     queryFn: fetchCharacters,
   });
-
-  const openCreate = () => {
-    setEditingCharacter(null);
-    setFormOpen(true);
-  };
-
-  const openEdit = (character: Character) => {
-    setEditingCharacter(character);
-    setFormOpen(true);
-  };
-
-  const handleDelete = async (character: Character) => {
-    if (!confirm(`Delete "${character.name}"? This cannot be undone.`)) return;
-    await fetch(`/api/characters/${character.id}`, { method: "DELETE" });
-    queryClient.invalidateQueries({ queryKey: ["characters"] });
-  };
 
   return (
     <div className="space-y-6">
@@ -59,7 +42,7 @@ export function CharacterList() {
           <h1 className="text-3xl font-bold tracking-tight">Characters</h1>
           <p className="text-muted-foreground mt-1">NPCs and PCs in your campaign</p>
         </div>
-        <Button onClick={openCreate}>
+        <Button onClick={() => setNewFormOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
           New Character
         </Button>
@@ -69,7 +52,7 @@ export function CharacterList() {
       {isLoading && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-44" />
+            <Skeleton key={i} className="h-36" />
           ))}
         </div>
       )}
@@ -82,18 +65,22 @@ export function CharacterList() {
           <p className="text-muted-foreground text-sm mt-1 mb-4">
             Add the NPCs and PCs your campaign revolves around.
           </p>
-          <Button onClick={openCreate}>
+          <Button onClick={() => setNewFormOpen(true)}>
             <Plus className="h-4 w-4 mr-2" />
             Add your first character
           </Button>
         </div>
       )}
 
-      {/* Character grid */}
+      {/* Character grid — each card opens the detail sheet */}
       {!isLoading && characters && characters.length > 0 && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {characters.map((character) => (
-            <Card key={character.id} className="flex flex-col">
+            <Card
+              key={character.id}
+              className="flex flex-col cursor-pointer hover:bg-accent/50 transition-colors"
+              onClick={() => setSelectedCharacter(character)}
+            >
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
@@ -117,37 +104,28 @@ export function CharacterList() {
               </CardHeader>
 
               {character.description && (
-                <CardContent className="pb-2 flex-1">
-                  <p className="text-sm text-muted-foreground line-clamp-2">
+                <CardContent className="pb-4 flex-1">
+                  <p className="text-sm text-muted-foreground line-clamp-3">
                     {character.description}
                   </p>
                 </CardContent>
               )}
-
-              <CardFooter className="pt-2 flex gap-1 justify-end mt-auto">
-                <Button size="sm" variant="ghost" onClick={() => openEdit(character)}>
-                  <Pencil className="h-3.5 w-3.5 mr-1" />
-                  Edit
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                  onClick={() => handleDelete(character)}
-                >
-                  <Trash2 className="h-3.5 w-3.5 mr-1" />
-                  Delete
-                </Button>
-              </CardFooter>
             </Card>
           ))}
         </div>
       )}
 
+      {/* New character dialog */}
       <CharacterForm
-        open={formOpen}
-        onOpenChange={setFormOpen}
-        character={editingCharacter}
+        open={newFormOpen}
+        onOpenChange={setNewFormOpen}
+        character={null}
+      />
+
+      {/* Detail / edit sheet */}
+      <CharacterSheet
+        character={selectedCharacter}
+        onClose={() => setSelectedCharacter(null)}
       />
     </div>
   );
