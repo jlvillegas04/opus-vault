@@ -11,7 +11,7 @@ const CreateSchema = z.object({
 });
 
 export async function GET() {
-  const result = db.select().from(locations).orderBy(asc(locations.name)).all();
+  const result = await db.select().from(locations).orderBy(asc(locations.name));
   return Response.json(result);
 }
 
@@ -25,10 +25,9 @@ export async function POST(request: Request) {
   const id = crypto.randomUUID();
   const now = new Date();
 
-  db.insert(locations)
-    .values({ id, ...parsed.data, createdAt: now, updatedAt: now })
-    .run();
+  await db.insert(locations)
+    .values({ id, ...parsed.data, createdAt: now, updatedAt: now });
 
-  const created = db.select().from(locations).where(eq(locations.id, id)).get();
+  const created = await db.select().from(locations).where(eq(locations.id, id)).get();
   return Response.json(created, { status: 201 });
 }

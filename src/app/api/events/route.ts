@@ -13,11 +13,10 @@ const CreateSchema = z.object({
 });
 
 export async function GET() {
-  const result = db
+  const result = await db
     .select()
     .from(events)
-    .orderBy(sql`${events.sessionNumber} DESC NULLS LAST, ${events.createdAt} DESC`)
-    .all();
+    .orderBy(sql`${events.sessionNumber} DESC NULLS LAST, ${events.createdAt} DESC`);
   return Response.json(result);
 }
 
@@ -32,16 +31,15 @@ export async function POST(request: Request) {
   const id = crypto.randomUUID();
   const now = new Date();
 
-  db.insert(events)
+  await db.insert(events)
     .values({
       id,
       ...rest,
       realDate: realDate ? new Date(realDate) : undefined,
       createdAt: now,
       updatedAt: now,
-    })
-    .run();
+    });
 
-  const created = db.select().from(events).where(sql`${events.id} = ${id}`).get();
+  const created = await db.select().from(events).where(sql`${events.id} = ${id}`).get();
   return Response.json(created, { status: 201 });
 }
