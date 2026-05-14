@@ -5,19 +5,30 @@ import { db } from "@/lib/db";
 import { characters, factions, locations, events, plotlines, items, notes } from "@/lib/db/schema";
 import { sql } from "drizzle-orm";
 
-function countRows(table: any): number {
-  return db.select({ n: sql<number>`count(*)` }).from(table).get()?.n ?? 0;
+async function countRows(table: any): Promise<number> {
+  const result = await db.select({ n: sql<number>`count(*)` }).from(table);
+  return result[0]?.n ?? 0;
 }
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const counts = await Promise.all([
+    countRows(characters),
+    countRows(factions),
+    countRows(locations),
+    countRows(events),
+    countRows(plotlines),
+    countRows(items),
+    countRows(notes),
+  ]);
+
   const entityCards = [
-    { title: "Characters", description: "NPCs and PCs in your campaign",       icon: Users,    href: "/characters", count: countRows(characters) },
-    { title: "Factions",   description: "Organizations, guilds, and kingdoms",  icon: Shield,   href: "/factions",   count: countRows(factions) },
-    { title: "Locations",  description: "Cities, dungeons, and regions",        icon: MapPin,   href: "/locations",  count: countRows(locations) },
-    { title: "Events",     description: "Session timeline and history",          icon: Calendar, href: "/events",     count: countRows(events) },
-    { title: "Plotlines",  description: "Active and resolved story arcs",       icon: BookOpen, href: "/plotlines",  count: countRows(plotlines) },
-    { title: "Items",      description: "Magic items and artifacts",            icon: Swords,   href: "/items",      count: countRows(items) },
-    { title: "Notes",      description: "Campaign notes and documents",         icon: Scroll,   href: "/notes",      count: countRows(notes) },
+    { title: "Characters", description: "NPCs and PCs in your campaign",      icon: Users,    href: "/characters", count: counts[0] },
+    { title: "Factions",   description: "Organizations, guilds, and kingdoms", icon: Shield,   href: "/factions",   count: counts[1] },
+    { title: "Locations",  description: "Cities, dungeons, and regions",       icon: MapPin,   href: "/locations",  count: counts[2] },
+    { title: "Events",     description: "Session timeline and history",         icon: Calendar, href: "/events",     count: counts[3] },
+    { title: "Plotlines",  description: "Active and resolved story arcs",      icon: BookOpen, href: "/plotlines",  count: counts[4] },
+    { title: "Items",      description: "Magic items and artifacts",           icon: Swords,   href: "/items",      count: counts[5] },
+    { title: "Notes",      description: "Campaign notes and documents",        icon: Scroll,   href: "/notes",      count: counts[6] },
   ];
 
   return (

@@ -12,7 +12,7 @@ const CreateSchema = z.object({
 });
 
 export async function GET() {
-  const result = db.select().from(characters).orderBy(asc(characters.name)).all();
+  const result = await db.select().from(characters).orderBy(asc(characters.name));
   return Response.json(result);
 }
 
@@ -26,10 +26,9 @@ export async function POST(request: Request) {
   const id = crypto.randomUUID();
   const now = new Date();
 
-  db.insert(characters)
-    .values({ id, ...parsed.data, createdAt: now, updatedAt: now })
-    .run();
+  await db.insert(characters)
+    .values({ id, ...parsed.data, createdAt: now, updatedAt: now });
 
-  const created = db.select().from(characters).where(eq(characters.id, id)).get();
+  const created = await db.select().from(characters).where(eq(characters.id, id)).get();
   return Response.json(created, { status: 201 });
 }

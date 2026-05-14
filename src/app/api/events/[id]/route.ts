@@ -16,7 +16,7 @@ type RouteContext = { params: Promise<{ id: string }> };
 
 export async function GET(_request: Request, { params }: RouteContext) {
   const { id } = await params;
-  const event = db.select().from(events).where(eq(events.id, id)).get();
+  const event = await db.select().from(events).where(eq(events.id, id)).get();
   if (!event) return Response.json({ error: "Not found" }, { status: 404 });
   return Response.json(event);
 }
@@ -29,7 +29,7 @@ export async function PATCH(request: Request, { params }: RouteContext) {
     return Response.json({ error: parsed.error.issues }, { status: 400 });
   }
 
-  const existing = db.select().from(events).where(eq(events.id, id)).get();
+  const existing = await db.select().from(events).where(eq(events.id, id)).get();
   if (!existing) return Response.json({ error: "Not found" }, { status: 404 });
 
   const { realDate, ...rest } = parsed.data;
@@ -38,17 +38,17 @@ export async function PATCH(request: Request, { params }: RouteContext) {
     updateData.realDate = realDate ? new Date(realDate) : null;
   }
 
-  db.update(events).set(updateData).where(eq(events.id, id)).run();
+  await db.update(events).set(updateData).where(eq(events.id, id));
 
-  const updated = db.select().from(events).where(eq(events.id, id)).get();
+  const updated = await db.select().from(events).where(eq(events.id, id)).get();
   return Response.json(updated);
 }
 
 export async function DELETE(_request: Request, { params }: RouteContext) {
   const { id } = await params;
-  const existing = db.select().from(events).where(eq(events.id, id)).get();
+  const existing = await db.select().from(events).where(eq(events.id, id)).get();
   if (!existing) return Response.json({ error: "Not found" }, { status: 404 });
 
-  db.delete(events).where(eq(events.id, id)).run();
+  await db.delete(events).where(eq(events.id, id));
   return new Response(null, { status: 204 });
 }
