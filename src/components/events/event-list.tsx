@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Plus, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -75,22 +75,19 @@ export function EventList() {
               onClick={() => setSelectedEvent(event)}
             >
               <CardHeader className="pb-2">
-                <div className="flex items-start justify-between gap-2">
-                  <CardTitle className="truncate text-base">{event.title}</CardTitle>
-                  {event.sessionNumber != null && (
+                <CardTitle className="truncate text-base">{event.title}</CardTitle>
+                {event.eventDate && (
+                  <p className="text-xs text-muted-foreground">{event.eventDate}</p>
+                )}
+                {event.sessionNumber != null && (
+                  <CardAction>
                     <Badge
                       variant="outline"
-                      className={cn(
-                        "shrink-0",
-                        "bg-primary/15 text-primary border-primary/20"
-                      )}
+                      className={cn("bg-primary/15 text-primary border-primary/20")}
                     >
                       Sesión {event.sessionNumber}
                     </Badge>
-                  )}
-                </div>
-                {event.eventDate && (
-                  <p className="text-xs text-muted-foreground mt-0.5">{event.eventDate}</p>
+                  </CardAction>
                 )}
               </CardHeader>
 

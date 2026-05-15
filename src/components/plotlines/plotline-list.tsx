@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Plus, GitBranch } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -82,18 +82,15 @@ export function PlotlineList() {
               onClick={() => setSelectedPlotline(plotline)}
             >
               <CardHeader className="pb-2">
-                <div className="flex items-start justify-between gap-2">
-                  <CardTitle className="truncate text-base">{plotline.title}</CardTitle>
+                <CardTitle className="truncate text-base">{plotline.title}</CardTitle>
+                <CardAction>
                   <Badge
                     variant="outline"
-                    className={cn(
-                      "shrink-0 capitalize",
-                      STATUS_STYLES[plotline.status ?? "active"]
-                    )}
+                    className={cn("capitalize", STATUS_STYLES[plotline.status ?? "active"])}
                   >
                     {plotline.status ?? "active"}
                   </Badge>
-                </div>
+                </CardAction>
               </CardHeader>
 
               {plotline.description && (

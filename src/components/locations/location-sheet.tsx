@@ -171,7 +171,7 @@ export function LocationSheet({ location, onClose }: LocationSheetProps) {
                   </div>
                 ) : (
                   <div className="flex items-start gap-2">
-                    <SheetTitle className="text-xl leading-tight">{form.name}</SheetTitle>
+                    <SheetTitle className="min-w-0 break-words text-xl leading-tight">{form.name}</SheetTitle>
                     <Badge
                       variant="outline"
                       className={cn(
