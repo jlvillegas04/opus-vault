@@ -8,6 +8,20 @@ Opus Vault is an AI-powered D&D campaign lorekeeper for solo DM use. It stores c
 
 **Local-only, single campaign, no auth.**
 
+## Campaign: Opus 1.0 → Opus 2.0
+
+The campaign runs in arcs. Entities carry an `arc` field to track which storyline they belong to.
+
+- **Opus 1.0** (arc = `"opus-1"`) — COMPLETE. 18+ sessions. Mediador 100 exam storyline. Characters: Aiko/Tatsuo LaCroix, Lira, Zep, others. World consequences persist.
+- **Opus 2.0** (arc = `"opus-2"`) — IN PROGRESS. 1-year timeskip. New player characters. New district: Callejones de Mercurio. New plotlines starting with Mediador 101 exam. World is continuous — Opus 1.0 events shape this arc.
+
+**Arc conventions:**
+- Player Characters: `isPlayerCharacter = true` + `arc` set to which arc they played in
+- NPCs and world entities (factions, locations) that span arcs: `arc = null`
+- New Opus 2.0 lore: `arc = "opus-2"`
+
+The **Lorekeeper AI** must understand this arc structure. When answering questions, it should distinguish "current" (Opus 2.0) from "historical" (Opus 1.0) context.
+
 ## Commands
 
 ```bash
@@ -31,9 +45,9 @@ No test framework configured yet.
 
 ### Database
 
-Schema lives in `src/lib/db/schema.ts`. Connection in `src/lib/db/index.ts` (WAL mode, foreign keys ON).
+Schema lives in `src/lib/db/schema.ts`. Connection in `src/lib/db/index.ts`.
 
-**`better-sqlite3` is synchronous** — DB calls do not use `await`. The `db` singleton is server-only; never import it into `"use client"` components. Access it from Server Components, Server Actions, or Route Handlers only.
+**Turso (libsql)** — DB is hosted on Turso. Credentials in `.env.local` as `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`. All DB calls are **async** — always `await` them. The `db` singleton is server-only; never import it into `"use client"` components. Access from Server Components, Server Actions, or Route Handlers only.
 
 Type exports live at the bottom of `schema.ts` — use `Character`, `NewCharacter`, etc. as the canonical types throughout the app.
 
@@ -76,18 +90,29 @@ Navigation defined in `src/components/app-sidebar.tsx` — add new entity types 
 
 `.env.local` (not committed):
 ```
-ANTHROPIC_API_KEY=   # Required for Lorekeeper chat
-DATABASE_PATH=       # Optional, defaults to ./opus-vault.db
+ANTHROPIC_API_KEY=       # Required for Lorekeeper chat
+TURSO_DATABASE_URL=      # Turso DB URL (libsql://...)
+TURSO_AUTH_TOKEN=        # Turso auth token
 ```
 
 ## Implementation Plan
 
-Full plan in `C:\Users\Juan Villegas\.claude\plans\pure-bouncing-island.md` (local to this machine).
-
 - Phase 1: Foundation — COMPLETE
-- Phase 2: Knowledge Base CRUD — next
-- Phase 3: Markdown Import
-- Phase 4: RAG (SQLite FTS5, not embeddings — keeping costs down)
-- Phase 5: Lorekeeper Chat
+- Phase 2: Knowledge Base CRUD — COMPLETE
+- Phase 3: Markdown Import — pending
+- Phase 4: RAG search (keyword search across entity fields, no embeddings — keeping costs down) — IN PROGRESS
+- Phase 5: Lorekeeper Chat (streaming Claude API, arc-aware context) — IN PROGRESS
 - Phase 6: Plotline Suggestions
 - Phase 7: Polish & Visualization
+
+### Lorekeeper Architecture
+
+`/app/lorekeeper` — chat page (client component)
+`/app/api/lorekeeper` — POST route: receives `{message, history}`, runs entity search, builds context, streams Claude response
+`/src/lib/lorekeeper/search.ts` — keyword search across all entity tables
+`/src/lib/lorekeeper/context.ts` — formats entities into Claude-readable context blocks
+
+The Lorekeeper system prompt always includes:
+- Campaign arc context (Opus 1.0 complete, Opus 2.0 in progress)
+- Retrieved entity context from the search
+- DM assistant persona: answers lore questions, flags contradictions, suggests plot hooks
