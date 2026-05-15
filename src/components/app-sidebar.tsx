@@ -74,7 +74,7 @@ const navigationItems = [
 const aiItems = [
   {
     title: "Lorekeeper",
-    url: "/chat",
+    url: "/lorekeeper",
     icon: MessageSquare,
   },
 ];
