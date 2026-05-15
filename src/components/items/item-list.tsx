@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Plus, Swords } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -95,19 +95,14 @@ export function ItemList() {
               onClick={() => setSelectedItem(item)}
             >
               <CardHeader className="pb-2">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0">
-                    <CardTitle className="truncate text-base">{item.name}</CardTitle>
-                  </div>
-                  {item.rarity && (
-                    <Badge
-                      variant="outline"
-                      className={cn("shrink-0", RARITY_STYLES[item.rarity])}
-                    >
+                <CardTitle className="truncate text-base">{item.name}</CardTitle>
+                {item.rarity && (
+                  <CardAction>
+                    <Badge variant="outline" className={cn(RARITY_STYLES[item.rarity])}>
                       {RARITY_LABELS[item.rarity] ?? item.rarity}
                     </Badge>
-                  )}
-                </div>
+                  </CardAction>
+                )}
               </CardHeader>
 
               {item.description && (

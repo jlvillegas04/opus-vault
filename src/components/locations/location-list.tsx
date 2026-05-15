@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Plus, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { LocationForm } from "./location-form";
@@ -87,18 +87,15 @@ export function LocationList() {
               onClick={() => setSelectedLocation(location)}
             >
               <CardHeader className="pb-2">
-                <div className="flex items-start justify-between gap-2">
-                  <CardTitle className="truncate text-base">{location.name}</CardTitle>
+                <CardTitle className="truncate text-base">{location.name}</CardTitle>
+                <CardAction>
                   <Badge
                     variant="outline"
-                    className={cn(
-                      "shrink-0 capitalize",
-                      LOCATION_TYPE_STYLES[location.locationType ?? "other"]
-                    )}
+                    className={cn("capitalize", LOCATION_TYPE_STYLES[location.locationType ?? "other"])}
                   >
                     {location.locationType ?? "other"}
                   </Badge>
-                </div>
+                </CardAction>
               </CardHeader>
 
               {location.description && (

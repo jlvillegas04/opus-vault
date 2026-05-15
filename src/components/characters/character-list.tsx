@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Plus, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -82,25 +82,18 @@ export function CharacterList() {
               onClick={() => setSelectedCharacter(character)}
             >
               <CardHeader className="pb-2">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0">
-                    <CardTitle className="truncate text-base">{character.name}</CardTitle>
-                    {character.title && (
-                      <p className="text-sm text-muted-foreground truncate mt-0.5">
-                        {character.title}
-                      </p>
-                    )}
-                  </div>
+                <CardTitle className="truncate text-base">{character.name}</CardTitle>
+                {character.title && (
+                  <CardDescription className="truncate">{character.title}</CardDescription>
+                )}
+                <CardAction>
                   <Badge
                     variant="outline"
-                    className={cn(
-                      "shrink-0 capitalize",
-                      STATUS_STYLES[character.status ?? "unknown"]
-                    )}
+                    className={cn("capitalize", STATUS_STYLES[character.status ?? "unknown"])}
                   >
                     {character.status ?? "unknown"}
                   </Badge>
-                </div>
+                </CardAction>
               </CardHeader>
 
               {character.description && (
