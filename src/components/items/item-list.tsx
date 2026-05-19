@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { Plus, Swords } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +11,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { FilterBar, type FilterOption } from "@/components/ui/filter-bar";
 import { cn } from "@/lib/utils";
 import { ItemForm } from "./item-form";
-import { ItemSheet } from "./item-sheet";
 import type { Item } from "@/lib/db/schema";
 
 const RARITY_STYLES: Record<string, string> = {
@@ -50,8 +50,8 @@ async function fetchItems(): Promise<Item[]> {
 }
 
 export function ItemList() {
+  const router = useRouter();
   const [newFormOpen, setNewFormOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
@@ -74,7 +74,7 @@ export function ItemList() {
   }, [items, search, activeFilter]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4 overflow-auto flex-1">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Items</h1>
@@ -135,7 +135,7 @@ export function ItemList() {
                   <Card
                     key={item.id}
                     className="flex flex-col cursor-pointer hover:bg-accent/50 transition-colors"
-                    onClick={() => setSelectedItem(item)}
+                    onClick={() => router.push(`/items/${item.id}`)}
                   >
                     <CardHeader className="pb-2">
                       <CardTitle className="truncate text-base">{item.name}</CardTitle>
@@ -165,7 +165,6 @@ export function ItemList() {
 
       <ItemForm open={newFormOpen} onOpenChange={setNewFormOpen} />
 
-      <ItemSheet item={selectedItem} onClose={() => setSelectedItem(null)} />
     </div>
   );
 }

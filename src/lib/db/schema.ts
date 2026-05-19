@@ -12,6 +12,7 @@ export const characters = sqliteTable("characters", {
   isPlayerCharacter: integer("is_player_character", { mode: "boolean" }).default(false),
   arc: text("arc"), // "opus-1" | "opus-2" | null (null = spans all arcs)
   imageUrl: text("image_url"),
+  sourcePath: text("source_path"),
   createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
   updatedAt: integer("updated_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
 });
@@ -24,6 +25,7 @@ export const factions = sqliteTable("factions", {
   goals: text("goals"),
   alignment: text("alignment"), // "Lawful Good", "Chaotic Evil", etc.
   imageUrl: text("image_url"),
+  sourcePath: text("source_path"),
   createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
   updatedAt: integer("updated_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
 });
@@ -38,6 +40,7 @@ export const locations = sqliteTable("locations", {
   }).default("other"),
   parentLocationId: text("parent_location_id").references((): AnySQLiteColumn => locations.id),
   imageUrl: text("image_url"),
+  sourcePath: text("source_path"),
   createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
   updatedAt: integer("updated_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
 });
@@ -51,6 +54,7 @@ export const events = sqliteTable("events", {
   eventDate: text("event_date"), // In-world date (flexible format)
   realDate: integer("real_date", { mode: "timestamp" }), // Real-world session date
   consequences: text("consequences"),
+  sourcePath: text("source_path"), // Original file path if imported
   createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
   updatedAt: integer("updated_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
 });
@@ -67,6 +71,7 @@ export const plotlines = sqliteTable("plotlines", {
   hooks: text("hooks"), // Potential story hooks
   complications: text("complications"),
   potentialResolutions: text("potential_resolutions"),
+  sourcePath: text("source_path"),
   createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
   updatedAt: integer("updated_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
 });
@@ -84,6 +89,7 @@ export const items = sqliteTable("items", {
   currentLocationId: text("current_location_id").references(() => locations.id),
   history: text("history"),
   imageUrl: text("image_url"),
+  sourcePath: text("source_path"),
   createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
   updatedAt: integer("updated_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
 });

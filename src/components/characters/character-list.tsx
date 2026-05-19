@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { Plus, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +11,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { FilterBar, type FilterOption } from "@/components/ui/filter-bar";
 import { cn } from "@/lib/utils";
 import { CharacterForm } from "./character-form";
-import { CharacterSheet } from "./character-sheet";
 import type { Character } from "@/lib/db/schema";
 
 const STATUS_STYLES: Record<string, string> = {
@@ -34,8 +34,8 @@ async function fetchCharacters(): Promise<Character[]> {
 }
 
 export function CharacterList() {
+  const router = useRouter();
   const [newFormOpen, setNewFormOpen] = useState(false);
-  const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
@@ -59,7 +59,7 @@ export function CharacterList() {
   }, [characters, search, activeFilter]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4 overflow-auto flex-1">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Characters</h1>
@@ -120,7 +120,7 @@ export function CharacterList() {
                   <Card
                     key={character.id}
                     className="flex flex-col cursor-pointer hover:bg-accent/50 transition-colors"
-                    onClick={() => setSelectedCharacter(character)}
+                    onClick={() => router.push(`/characters/${character.id}`)}
                   >
                     <CardHeader className="pb-2">
                       <CardTitle className="truncate text-base">{character.name}</CardTitle>
@@ -158,10 +158,6 @@ export function CharacterList() {
         character={null}
       />
 
-      <CharacterSheet
-        character={selectedCharacter}
-        onClose={() => setSelectedCharacter(null)}
-      />
     </div>
   );
 }

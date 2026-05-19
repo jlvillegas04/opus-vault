@@ -99,7 +99,7 @@ export function LorekeeperChat() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)]">
+    <div className="flex flex-col flex-1 overflow-hidden">
       {/* Message area */}
       <ScrollArea className="flex-1 px-4 py-6">
         {messages.length === 0 ? (

@@ -9,6 +9,8 @@ const UpdateSchema = z.object({
   description: z.string().optional(),
   backstory: z.string().optional(),
   status: z.enum(["alive", "dead", "missing", "unknown"]).optional(),
+  isPlayerCharacter: z.boolean().optional(),
+  arc: z.string().nullable().optional(),
 });
 
 type RouteContext = { params: Promise<{ id: string }> };

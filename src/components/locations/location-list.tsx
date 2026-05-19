@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { Plus, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,7 +11,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { FilterBar, type FilterOption } from "@/components/ui/filter-bar";
 import { cn } from "@/lib/utils";
 import { LocationForm } from "./location-form";
-import { LocationSheet } from "./location-sheet";
 import type { Location } from "@/lib/db/schema";
 
 const LOCATION_TYPE_STYLES: Record<string, string> = {
@@ -44,8 +44,8 @@ async function fetchLocations(): Promise<Location[]> {
 }
 
 export function LocationList() {
+  const router = useRouter();
   const [newFormOpen, setNewFormOpen] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
@@ -68,7 +68,7 @@ export function LocationList() {
   }, [locations, search, activeFilter]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4 overflow-auto flex-1">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Locations</h1>
@@ -129,7 +129,7 @@ export function LocationList() {
                   <Card
                     key={location.id}
                     className="flex flex-col cursor-pointer hover:bg-accent/50 transition-colors"
-                    onClick={() => setSelectedLocation(location)}
+                    onClick={() => router.push(`/locations/${location.id}`)}
                   >
                     <CardHeader className="pb-2">
                       <CardTitle className="truncate text-base">{location.name}</CardTitle>
@@ -160,7 +160,6 @@ export function LocationList() {
 
       <LocationForm open={newFormOpen} onOpenChange={setNewFormOpen} />
 
-      <LocationSheet location={selectedLocation} onClose={() => setSelectedLocation(null)} />
     </div>
   );
 }

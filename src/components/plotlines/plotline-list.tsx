@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { Plus, GitBranch } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +11,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { FilterBar, type FilterOption } from "@/components/ui/filter-bar";
 import { cn } from "@/lib/utils";
 import { PlotlineForm } from "./plotline-form";
-import { PlotlineSheet } from "./plotline-sheet";
 import type { Plotline } from "@/lib/db/schema";
 
 const STATUS_STYLES: Record<string, string> = {
@@ -34,8 +34,8 @@ async function fetchPlotlines(): Promise<Plotline[]> {
 }
 
 export function PlotlineList() {
+  const router = useRouter();
   const [newFormOpen, setNewFormOpen] = useState(false);
-  const [selectedPlotline, setSelectedPlotline] = useState<Plotline | null>(null);
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
@@ -58,7 +58,7 @@ export function PlotlineList() {
   }, [plotlines, search, activeFilter]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4 overflow-auto flex-1">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Plotlines</h1>
@@ -119,7 +119,7 @@ export function PlotlineList() {
                   <Card
                     key={plotline.id}
                     className="flex flex-col cursor-pointer hover:bg-accent/50 transition-colors"
-                    onClick={() => setSelectedPlotline(plotline)}
+                    onClick={() => router.push(`/plotlines/${plotline.id}`)}
                   >
                     <CardHeader className="pb-2">
                       <CardTitle className="truncate text-base">{plotline.title}</CardTitle>
@@ -150,7 +150,6 @@ export function PlotlineList() {
 
       <PlotlineForm open={newFormOpen} onOpenChange={setNewFormOpen} />
 
-      <PlotlineSheet plotline={selectedPlotline} onClose={() => setSelectedPlotline(null)} />
     </div>
   );
 }

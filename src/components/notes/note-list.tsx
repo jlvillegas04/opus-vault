@@ -2,13 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { Plus, ScrollText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { NoteForm } from "./note-form";
-import { NoteSheet } from "./note-sheet";
 import type { Note } from "@/lib/db/schema";
 
 async function fetchNotes(): Promise<Note[]> {
@@ -18,8 +18,8 @@ async function fetchNotes(): Promise<Note[]> {
 }
 
 export function NoteList() {
+  const router = useRouter();
   const [newFormOpen, setNewFormOpen] = useState(false);
-  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [search, setSearch] = useState("");
 
   const { data: notes, isLoading } = useQuery({
@@ -38,7 +38,7 @@ export function NoteList() {
   }, [notes, search]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4 overflow-auto flex-1">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Notes</h1>
@@ -96,7 +96,7 @@ export function NoteList() {
                   <Card
                     key={note.id}
                     className="flex flex-col cursor-pointer hover:bg-accent/50 transition-colors"
-                    onClick={() => setSelectedNote(note)}
+                    onClick={() => router.push(`/notes/${note.id}`)}
                   >
                     <CardHeader className="pb-2">
                       <CardTitle className="truncate text-base">{note.title}</CardTitle>
@@ -104,8 +104,8 @@ export function NoteList() {
 
                     {note.content && (
                       <CardContent className="pb-4 flex-1">
-                        <p className="text-sm text-muted-foreground line-clamp-3">
-                          {note.content}
+                        <p className="text-sm text-muted-foreground line-clamp-3 whitespace-pre-line">
+                          {note.content.replace(/^#+\s/gm, "").replace(/[*_`#>]/g, "")}
                         </p>
                       </CardContent>
                     )}
@@ -118,8 +118,6 @@ export function NoteList() {
       )}
 
       <NoteForm open={newFormOpen} onOpenChange={setNewFormOpen} />
-
-      <NoteSheet note={selectedNote} onClose={() => setSelectedNote(null)} />
     </div>
   );
 }
