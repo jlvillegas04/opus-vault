@@ -2,13 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { Plus, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { FactionForm } from "./faction-form";
-import { FactionSheet } from "./faction-sheet";
 import type { Faction } from "@/lib/db/schema";
 
 async function fetchFactions(): Promise<Faction[]> {
@@ -18,8 +18,8 @@ async function fetchFactions(): Promise<Faction[]> {
 }
 
 export function FactionList() {
+  const router = useRouter();
   const [newFormOpen, setNewFormOpen] = useState(false);
-  const [selectedFaction, setSelectedFaction] = useState<Faction | null>(null);
   const [search, setSearch] = useState("");
 
   const { data: factions, isLoading } = useQuery({
@@ -39,7 +39,7 @@ export function FactionList() {
   }, [factions, search]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4 overflow-auto flex-1">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Factions</h1>
@@ -97,7 +97,7 @@ export function FactionList() {
                   <Card
                     key={faction.id}
                     className="flex flex-col cursor-pointer hover:bg-accent/50 transition-colors"
-                    onClick={() => setSelectedFaction(faction)}
+                    onClick={() => router.push(`/factions/${faction.id}`)}
                   >
                     <CardHeader className="pb-2">
                       <div className="min-w-0">
@@ -127,7 +127,6 @@ export function FactionList() {
 
       <FactionForm open={newFormOpen} onOpenChange={setNewFormOpen} />
 
-      <FactionSheet faction={selectedFaction} onClose={() => setSelectedFaction(null)} />
     </div>
   );
 }

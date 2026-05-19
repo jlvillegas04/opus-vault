@@ -7,6 +7,7 @@ const UpdateSchema = z.object({
   title: z.string().min(1).optional(),
   description: z.string().optional(),
   status: z.enum(["active", "resolved", "dormant", "abandoned"]).optional(),
+  arc: z.string().nullable().optional(),
   hooks: z.string().optional(),
   complications: z.string().optional(),
   potentialResolutions: z.string().optional(),

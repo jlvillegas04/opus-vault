@@ -39,7 +39,7 @@ export default function RootLayout({
                 <SidebarTrigger className="-ml-1" />
                 <Separator orientation="vertical" className="mr-2 h-4" />
               </header>
-              <main className="flex-1 overflow-auto p-4">
+              <main className="flex-1 overflow-hidden flex flex-col">
                 {children}
               </main>
             </SidebarInset>
