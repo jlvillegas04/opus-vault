@@ -12,6 +12,7 @@ import {
   Swords,
   MessageSquare,
   Home,
+  Upload,
 } from "lucide-react";
 
 import {
@@ -79,6 +80,14 @@ const aiItems = [
   },
 ];
 
+const toolItems = [
+  {
+    title: "Import MD",
+    url: "/import",
+    icon: Upload,
+  },
+];
+
 export function AppSidebar() {
   const pathname = usePathname();
 
@@ -130,6 +139,28 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {aiItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === item.url}
+                    tooltip={item.title}
+                  >
+                    <Link href={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Tools</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {toolItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild

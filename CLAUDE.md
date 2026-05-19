@@ -38,7 +38,7 @@ No test framework configured yet.
 ## Architecture
 
 - **Next.js 16** App Router with React 19 and TypeScript (strict mode)
-- **SQLite** via better-sqlite3 with Drizzle ORM. DB file: `opus-vault.db` in project root
+- **Turso (libsql)** with Drizzle ORM — all DB calls are **async**, always `await` them
 - **TailwindCSS v4** with shadcn/ui components (new-york style, CSS variables)
 - **React Query v5** for client-side server state
 - **Dark mode by default** (`<html className="dark">`)
@@ -99,7 +99,7 @@ TURSO_AUTH_TOKEN=        # Turso auth token
 
 - Phase 1: Foundation — COMPLETE
 - Phase 2: Knowledge Base CRUD — COMPLETE
-- Phase 3: Markdown Import — pending
+- Phase 3: Markdown Import — COMPLETE (`/import` page, `POST /api/import/markdown`)
 - Phase 4: RAG search (keyword search across entity fields, no embeddings — keeping costs down) — IN PROGRESS
 - Phase 5: Lorekeeper Chat (streaming Claude API, arc-aware context) — IN PROGRESS
 - Phase 6: Plotline Suggestions
