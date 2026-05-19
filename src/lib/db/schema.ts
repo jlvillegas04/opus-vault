@@ -9,6 +9,8 @@ export const characters = sqliteTable("characters", {
   description: text("description"),
   backstory: text("backstory"),
   status: text("status", { enum: ["alive", "dead", "missing", "unknown"] }).default("alive"),
+  isPlayerCharacter: integer("is_player_character", { mode: "boolean" }).default(false),
+  arc: text("arc"), // "opus-1" | "opus-2" | null (null = spans all arcs)
   imageUrl: text("image_url"),
   createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
   updatedAt: integer("updated_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
@@ -61,6 +63,7 @@ export const plotlines = sqliteTable("plotlines", {
   status: text("status", {
     enum: ["active", "resolved", "dormant", "abandoned"]
   }).default("active"),
+  arc: text("arc"), // "opus-1" | "opus-2" | null
   hooks: text("hooks"), // Potential story hooks
   complications: text("complications"),
   potentialResolutions: text("potential_resolutions"),
